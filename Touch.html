@@ -3,7 +3,7 @@
 <html lang=en>
 <head>
 <meta charset=utf-8>
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0," /> 
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" /> 
 <meta name="mobile-web-app-capable" content="yes">
 <title>Touch Control</title>
 <style type="text/css"> 
@@ -420,7 +420,17 @@ function sendControls(){
 
 </script>
 <center>
-<img src="http://10.0.0.1:9000/?action=stream" />
+
+<p id="demo"></p>
+
+<script>
+// This script automatically picks the right IP for the stream 
+// Thanks to wonx (github.com/wonx)
+host = window.location.hostname;
+img = '<img src="http://' + host + ':9000/?action=stream" />';
+document.getElementById("demo").innerHTML = img;
+</script>
+
 </center>
 </body>
 </html>
