@@ -3,12 +3,12 @@
 <html lang=en>
 <head>
 <meta charset=utf-8>
-<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0" /> 
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> 
 <meta name="mobile-web-app-capable" content="yes">
 <title>Touch Control</title>
 <style type="text/css"> 
-	
-	* {
+  
+  * {
 	  -webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
 	  -webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
 	/* make transparent link selection, adjust last value opacity 0 to 1.0 */
@@ -24,14 +24,127 @@
 	canvas {
 		display:block; 
 		position:absolute; 
+		z-index: 1;
 	}
+	
 	.container {
 		width:auto;
 		text-align:center;
 		background-color:#ff0000;
 	}
+	/* Headlight toggle switch (source: http://callmenick.com/post/css-toggle-switch-examples) */
+	.cmn-toggle {
+		position: absolute;
+		margin-left: -9999px;
+		visibility: hidden;
+	}
+	.cmn-toggle + label {
+		display: block;
+		position: relative;
+		cursor: pointer;
+		outline: none;
+		user-select: none;
+	}
+	input.cmn-toggle-round-flat + label {
+  	background-color: transparent;
+  	border-radius: 10%;
+		border: 2px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+    
+		padding-top: 20%;
+    padding-bottom: 20%;
+    font-size: 16px;
+		margin: 40% 7% 10%;
+		cursor: pointer;
+		transition: background 0.4s;
+	}
+	input.cmn-toggle-round-flat:checked + label {
+		background-color: gray;
+	}
+	.cam_button {
+		background-color: transparent;
+		border-radius: 100%;
+		border: 7px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+		
+		padding-top: 40%;
+    padding-bottom: 40%;
+    padding-left: 40%;
+    padding-right: 40%;
+		font-size: 16px;
+		margin: 50% 3% 4% 4%;
+		cursor: pointer;
+	}
+	
+	.cam_button:active {
+		background-color: gray;
+	}
+  
+  .off_button {
+    background-color: transparent;
+		border-radius: 10%;
+		border: 2px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+		
+    padding-top: 20%;
+    padding-bottom: 20%;
+    font-size: 100%;
+    margin: 10% 7%;
+		cursor: pointer;
+	}
+  .off_button:active {
+  	background-color: gray;
+	}
+  
+  .light_button {
+  	background-color: transparent;
+		border-radius: 10%;
+		border: 2px;
+		border-style: solid;
+		border-color: white;
+		text-align:center;
+    
+		padding-top: 20%;
+    padding-bottom: 20%;
+    font-size: 16px;
+		margin: 40% 7% 10%;
+		cursor: pointer;
+	}
+	.light_button:checked {
+  	background-color: #b1b;
+	}
+  
+	.sidenav {
+		color: #fff;
+		height: 100%;
+		width: 13%;
+		position: fixed;
+		z-index: 0;
+		top: 0px;
+		background-color: #111;
+		overflow-x: hidden;
+		padding-top: 20px;
+		font-family: 'Roboto', sans-serif;
+	}
+  
+ 
+	
+  
+  
+  
+  
+	p#stream{
+		position: relative; 
+        top: -15px; 
+	}
 </style>
-
+<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
 </head>
 <ul id="messages"></ul>
@@ -91,7 +204,7 @@ var canvas,
 	leftVector = new Vector2(0,0);
 
 var temperature;
-var socket = io();
+var socket = io(); // comment this out for better debugging
 var sendFlag = false;
 
 setupCanvas();
@@ -203,17 +316,17 @@ function draw() {
 			
 			if(touch.identifier == leftTouchID){
 				c.beginPath(); 
-				c.strokeStyle = "cyan"; 
+				c.strokeStyle = "white"; 
 				c.lineWidth = 6; 
 				c.arc(leftTouchStartPos.x, leftTouchStartPos.y, 40,0,Math.PI*2,true); 
 				c.stroke();
 				c.beginPath(); 
-				c.strokeStyle = "cyan"; 
+				c.strokeStyle = "white"; 
 				c.lineWidth = 2; 
 				c.arc(leftTouchStartPos.x, leftTouchStartPos.y, 60,0,Math.PI*2,true); 
 				c.stroke();
 				c.beginPath(); 
-				c.strokeStyle = "cyan"; 
+				c.strokeStyle = "white"; 
 				c.arc(leftTouchPos.x, leftTouchPos.y, 40, 0,Math.PI*2, true); 
 				c.stroke(); 
 				
@@ -221,7 +334,7 @@ function draw() {
 				
 				c.beginPath(); 
 				c.fillStyle = "white";
-				c.fillText("touch id : "+touch.identifier+" x:"+touch.clientX+" y:"+touch.clientY, touch.clientX+30, touch.clientY-30); 
+				//c.fillText("touch id : "+touch.identifier+" x:"+touch.clientX+" y:"+touch.clientY, touch.clientX+30, touch.clientY-30); 
 
 				c.beginPath(); 
 				c.strokeStyle = "red";
@@ -235,24 +348,24 @@ function draw() {
 		if(mouseDown){
 		
 			c.beginPath(); 
-			c.strokeStyle = "cyan"; 
+			c.strokeStyle = "white"; 
 			c.lineWidth = 6; 
 			c.arc(leftTouchStartPos.x, leftTouchStartPos.y, 40,0,Math.PI*2,true); 
 			c.stroke();
 			c.beginPath(); 
-			c.strokeStyle = "cyan"; 
+			c.strokeStyle = "white"; 
 			c.lineWidth = 2; 
 			c.arc(leftTouchStartPos.x, leftTouchStartPos.y, 60,0,Math.PI*2,true); 
 			c.stroke();
 			c.beginPath(); 
-			c.strokeStyle = "cyan"; 
+			c.strokeStyle = "white"; 
 			c.arc(leftTouchPos.x, leftTouchPos.y, 40, 0,Math.PI*2, true); 
 			c.stroke(); 
 					
 			c.fillStyle	 = "white"; 
-			c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY); 
+			//c.fillText("mouse : "+mouseX+", "+mouseY, mouseX, mouseY); 
 			c.beginPath(); 
-			c.strokeStyle = "cyan";
+			c.strokeStyle = "white";
 			c.lineWidth = "6";
 			c.arc(mouseX, mouseY, 40, 0, Math.PI*2, true); 
 			c.stroke();
@@ -260,12 +373,22 @@ function draw() {
 	}
 	
 	socket.on('temp', function(msg){
+		document.getElementById("temp").innerHTML = parseInt(msg) + '°C';
 		temperature = msg;
+	});
+
+	socket.on('volt', function(msg){
+		document.getElementById("volt").innerHTML = msg.toFixed(2) + 'V';
+		voltage = msg;
+	});
+
+	socket.on('cam', function(msg){
+		document.getElementById("stream").innerHTML = img;
 	});
 	
 	leftVector.x = Math.min(Math.max(parseInt(leftVector.x), -255), 255);
 	leftVector.y = Math.min(Math.max(parseInt(leftVector.y), -255), 255);
-	c.fillText("Stick position: "+leftVector.x+"x "+leftVector.y+"y", 10, 10); 
+	//c.fillText("Stick position: "+leftVector.x+"x "+leftVector.y+"y", 10, 10); 
 	
 	tankDrive(leftVector.x, -leftVector.y);
 	if(leftMot > 0) leftMot += 90;
@@ -275,9 +398,9 @@ function draw() {
 	leftMot = Math.min(Math.max(parseInt(leftMot), -255), 255);
 	rightMot = Math.min(Math.max(parseInt(rightMot), -255), 255);
 	
-	c.fillText("Left Motor: "+leftMot+" Right Motor: "+rightMot, 10, 20);
+	//c.fillText("Left Motor: "+leftMot+" Right Motor: "+rightMot, 10, 20);
 	
-	c.fillText("Temperature: "+temperature+"°C", 10, 30);
+	//c.fillText("Temperature: "+temperature+"°C", 10, 30);
 	
 }
 
@@ -419,18 +542,62 @@ function sendControls(){
 }
 
 </script>
+<body scroll="no" style="overflow: hidden">
 <center>
 
-<p id="demo"></p>
+<p id="stream"></p>
 
 <script>
 // This script automatically picks the right IP for the stream 
 // Thanks to wonx (github.com/wonx)
 host = window.location.hostname;
-img = '<img src="http://' + host + ':9000/?action=stream" />';
-document.getElementById("demo").innerHTML = img;
+img = '<img src="http://' + host + ':9000/?action=stream" style="height:100vh;"/>';
+//img = '<img src="stream.png" style="height:100vh;"/>';
+document.getElementById("stream").innerHTML = img;
+function takePicture() {
+	socket.emit('cam', 1);
+}
+function shutdown() {
+    if(confirm("This will shutdown the Pi.\nAre you sure?")) 
+		alert('Shutting down...\nPlease wait 20s before turning the power off.')
+		socket.emit('power', 1);
+}
+// Handle headlight button
+function handleHeadlightClick(cb) {
+  if (cb.checked) {
+	// Turn on headlight
+	headlight = 1;
+  } else {
+	// Turn off headlight
+	headlight = 0;
+  }
+  socket.emit('light', headlight);
+}
+
 </script>
 
 </center>
+
+<div class="sidenav">
+  <center id="temp" style="padding:40%;">0°C</center>
+  <center id="volt" style="padding:40%;">0V</center>
+</div>
+<div class="sidenav" style="right:0;z-index: 2;">
+  <center class="off_button" type="button" onclick="shutdown()">OFF</center>
+  <center class="cam_button" type="button" onclick="takePicture()"></center>
+  <div>
+    <div class="switch">
+        <input id="cmn-toggle"css class="cmn-toggle cmn-toggle-round-flat" type="checkbox" onclick="handleHeadlightClick(this)">
+        <label for="cmn-toggle">LIGHT</label>
+    </div>
+  </div>
+</div>
+
+
+
+<div style="position:fixed;bottom:40vh;right:0;padding:25px">
+	
+</div>
+
 </body>
 </html>
