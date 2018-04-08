@@ -558,9 +558,10 @@ function takePicture() {
 	socket.emit('cam', 1);
 }
 function shutdown() {
-    if(confirm("This will shutdown the Pi.\nAre you sure?")) 
-		alert('Shutting down...\nPlease wait 20s before turning the power off.')
+    if(confirm("This will shutdown the Pi.\nAre you sure?")){
+		alert('Shutting down...\nPlease wait 20s before turning the power off.');
 		socket.emit('power', 1);
+	}
 }
 // Handle headlight button
 function handleHeadlightClick(cb) {
