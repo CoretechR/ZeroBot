@@ -523,10 +523,10 @@ onkeydown = onkeyup = function(e){
 		leftVector.x = 255;
 	}
 	
-	if(!map[38] && !map[40]){ // ArrowUp/Down is no pressed
+	if(!map[38] && !map[40]){ // ArrowUp/Down is not pressed
 		leftVector.y = 0;
 	}
-	if(!map[37] && !map[39]){ // ArrowLeft/Right is no pressed
+	if(!map[37] && !map[39]){ // ArrowLeft/Right is not pressed
 		leftVector.x = 0;
 	}
 	if(leftVector.y == 0 && leftVector.x == 0) leftMot = rightMot = 0;
