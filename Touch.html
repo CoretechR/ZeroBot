@@ -250,13 +250,12 @@ function resetCanvas (e) {
 var rawLeft, rawRight, MaxJoy = 255, MinJoy = -255, MaxValue = 255,
 	MinValue = -255, RawLeft, RawRight, ValLeft, ValRight;
 var leftMot = 0, rightMot = 0;
-
 function Remap(value, from1, to1, from2, to2){
 	return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
 }
 
-function tankDrive(x, y){
 //source: http://www.dyadica.co.uk/basic-differential-aka-tank-drive/
+function tankDrive(x, y){
 
 	// First hypotenuse
 	var z = Math.sqrt(x * x + y * y);
@@ -372,6 +371,13 @@ function draw() {
 		}
 	}
 	
+	
+	
+	//c.fillText("Left Motor: " + leftMot + " Right Motor: " + rightMot, 10, 30);
+	//c.fillText("Left Vx: " + leftVector.x + " Left Vy: " + leftVector.y, 10, 50);
+	//c.fillText("Temperature: "+temperature+"°C", 10, 30);
+	
+	
 	socket.on('temp', function(msg){
 		document.getElementById("temp").innerHTML = parseInt(msg) + '°C';
 		temperature = msg;
@@ -381,27 +387,10 @@ function draw() {
 		document.getElementById("volt").innerHTML = msg.toFixed(2) + 'V';
 		voltage = msg;
 	});
-
+	
 	socket.on('cam', function(msg){
 		document.getElementById("stream").innerHTML = img;
 	});
-	
-	leftVector.x = Math.min(Math.max(parseInt(leftVector.x), -255), 255);
-	leftVector.y = Math.min(Math.max(parseInt(leftVector.y), -255), 255);
-	//c.fillText("Stick position: "+leftVector.x+"x "+leftVector.y+"y", 10, 10); 
-	
-	tankDrive(leftVector.x, -leftVector.y);
-	if(leftMot > 0) leftMot += 90;
-	if(leftMot < 0) leftMot -= 90;
-	if(rightMot > 0) rightMot += 90;
-	if(rightMot < 0) rightMot -= 90;
-	leftMot = Math.min(Math.max(parseInt(leftMot), -255), 255);
-	rightMot = Math.min(Math.max(parseInt(rightMot), -255), 255);
-	
-	//c.fillText("Left Motor: "+leftMot+" Right Motor: "+rightMot, 10, 20);
-	
-	//c.fillText("Temperature: "+temperature+"°C", 10, 30);
-	
 }
 
 /*	
@@ -512,6 +501,37 @@ function onMouseUp(event) {
 	sendFlag = true;
 }
 
+/*
+Source for keyboard detection: Braden Best:
+https://stackoverflow.com/questions/5203407/how-to-detect-if-multiple-keys-are-pressed-at-once-using-javascript
+*/	
+var map = {};
+onkeydown = onkeyup = function(e){
+    e = e || event; // to deal with IE
+    map[e.keyCode] = e.type == 'keydown';
+	
+	if(map[38]){ // ArrowUp
+		leftVector.y = -255;
+	}
+	if(map[40]){ // ArrowDown
+		leftVector.y = 255;
+	}
+	if(map[37]){ // ArrowLeft
+		leftVector.x = -255;
+	}
+	if(map[39]){ // ArrowRight
+		leftVector.x = 255;
+	}
+	
+	if(!map[38] && !map[40]){ // ArrowUp/Down is no pressed
+		leftVector.y = 0;
+	}
+	if(!map[37] && !map[39]){ // ArrowLeft/Right is no pressed
+		leftVector.x = 0;
+	}
+	if(leftVector.y == 0 && leftVector.x == 0) leftMot = rightMot = 0;
+	sendFlag = true;
+}
 
 function setupCanvas() {
 	
@@ -535,7 +555,17 @@ function mouseOver(minX, minY, maxX, maxY){
 
 function sendControls(){
 	if(sendFlag == true){
-		//socket.emit('pos', leftVector.x, leftVector.y);
+		leftVector.x = Math.min(Math.max(parseInt(leftVector.x), -255), 255);
+		leftVector.y = Math.min(Math.max(parseInt(leftVector.y), -255), 255);
+		
+		tankDrive(leftVector.x, -leftVector.y);
+		if(leftMot > 0) leftMot += 90;
+		if(leftMot < 0) leftMot -= 90;
+		if(rightMot > 0) rightMot += 90;
+		if(rightMot < 0) rightMot -= 90;
+		leftMot = Math.min(Math.max(parseInt(leftMot), -255), 255);
+		rightMot = Math.min(Math.max(parseInt(rightMot), -255), 255);
+		
 		socket.emit('pos', leftMot, rightMot);
 		sendFlag = false;
 	}
