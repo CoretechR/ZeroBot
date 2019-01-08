@@ -212,7 +212,6 @@ setupCanvas();
 var mouseX, mouseY, 
 	// is this running in a touch capable environment?
 	mouseDown = false,
-	touchable = 'createTouch' in document,
 	touches = []; // array of touch vectors;
 
 setInterval(draw, 1000/30); // draw app at 30fps
@@ -220,18 +219,18 @@ setInterval(draw, 1000/30); // draw app at 30fps
 setInterval(sendControls, 1000/20); // send control input at 20fps
 
 
-if(touchable) {
+
 	canvas.addEventListener( 'touchstart', onTouchStart, false );
 	canvas.addEventListener( 'touchmove', onTouchMove, false );
 	canvas.addEventListener( 'touchend', onTouchEnd, false );
 	window.onorientationchange = resetCanvas;  
 	window.onresize = resetCanvas;  
-} else {
+
 	
 	canvas.addEventListener( 'mousemove', onMouseMove, false );
 	canvas.addEventListener( 'mousedown', onMouseDown, false );
 	canvas.addEventListener( 'mouseup', onMouseUp, false );
-}
+
 
 function resetCanvas (e) {  
  	// resize the canvas - but remember - this clears the canvas too. 
@@ -307,8 +306,8 @@ function draw() {
   
 	c.clearRect(0,0,canvas.width, canvas.height); 
 
-	if(touchable) {
 	
+	//if touch
 		for(var i=0; i<touches.length; i++) {
 			
 			var touch = touches[i]; 
@@ -342,8 +341,8 @@ function draw() {
 				c.stroke();
 			}
 		}
-	} else {
-		
+	
+	//if no touch		
 		if(mouseDown){
 		
 			c.beginPath(); 
@@ -369,7 +368,7 @@ function draw() {
 			c.arc(mouseX, mouseY, 40, 0, Math.PI*2, true); 
 			c.stroke();
 		}
-	}
+	
 	
 	
 	
@@ -384,8 +383,12 @@ function draw() {
 	});
 
 	socket.on('volt', function(msg){
-		document.getElementById("volt").innerHTML = msg.toFixed(2) + 'V';
 		voltage = msg;
+		if(voltage > 0){ // Don't show voltage without ADC
+			document.getElementById("volt").innerHTML = msg.toFixed(2) + 'V';
+		} else{
+			document.getElementById("volt").innerHTML = ' ';
+		}
 	});
 	
 	socket.on('cam', function(msg){
